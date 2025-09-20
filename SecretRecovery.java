@@ -16,8 +16,7 @@ public class SecretRecovery {
         JSONObject keys = obj.getJSONObject("keys");
         int n = keys.getInt("n");
         int k = keys.getInt("k");
-        System.out.println("n=" + n + ", k=" + k);
-
+        
         // 3. Read points (x, y) where y is in different bases
         List<Point> points = new ArrayList<>();
         for (String key : obj.keySet()) {
@@ -30,7 +29,7 @@ public class SecretRecovery {
                 // Convert y from base to decimal (BigInteger)
                 BigInteger y = new BigInteger(valueStr, base);
                 points.add(new Point(BigInteger.valueOf(x), y));
-                System.out.println("Point: (" + x + ", " + y + ") from base " + base);
+               
             }
         }
 
