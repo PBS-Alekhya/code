@@ -17,24 +17,21 @@ public class SecretRecovery {
         int n = keys.getInt("n");
         int k = keys.getInt("k");
         
+
         // 3. Read points (x, y) where y is in different bases
         List<Point> points = new ArrayList<>();
-        for (String key : obj.keySet()) {
-            if (!key.equals("keys")) {
-                JSONObject point = obj.getJSONObject(key);
-                int base = Integer.parseInt(point.getString("base"));
-                String valueStr = point.getString("value");
-                int x = Integer.parseInt(key);
+        for (int i = 1; i <= n; i++) {
+            JSONObject point = obj.getJSONObject(String.valueOf(i));
+            int base = Integer.parseInt(point.getString("base"));
+            String valueStr = point.getString("value");
 
-                // Convert y from base to decimal (BigInteger)
-                BigInteger y = new BigInteger(valueStr, base);
-                points.add(new Point(BigInteger.valueOf(x), y));
-               
-            }
+            // Convert y from base to decimal (BigInteger)
+            BigInteger y = new BigInteger(valueStr, base);
+            points.add(new Point(BigInteger.valueOf(i), y));
+            
         }
 
-        // 4. Sort points by x-value and use first k points for interpolation
-        points.sort((p1, p2) -> p1.x.compareTo(p2.x));
+        // 4. Use first k points for interpolation
         List<Point> subset = points.subList(0, k);
 
         // 5. Compute constant term using Lagrange interpolation at x=0
