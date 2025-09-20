@@ -8,33 +8,43 @@ import org.json.JSONObject;
 public class SecretRecovery {
 
     public static void main(String[] args) throws IOException {
-        // 1. Read JSON file into string
+        // Read JSON file into string
         String content = new String(Files.readAllBytes(Paths.get("input.json")));
         JSONObject obj = new JSONObject(content);
 
-        // 2. Extract n and k
+        // Extract n and k
         JSONObject keys = obj.getJSONObject("keys");
         int n = keys.getInt("n");
         int k = keys.getInt("k");
         
-
-        // 3. Read points (x, y) where y is in different bases
+        // Read points (x, y) where y is in different bases
         List<Point> points = new ArrayList<>();
-        for (int i = 1; i <= n; i++) {
-            JSONObject point = obj.getJSONObject(String.valueOf(i));
+
+        // Loop through actual keys in JSON
+        List<String> jsonKeys = new ArrayList<>();
+        for (String key : obj.keySet()) {
+            if (!key.equals("keys")) jsonKeys.add(key);
+        }
+
+        // Sort keys numerically
+        jsonKeys.sort(Comparator.comparingInt(Integer::parseInt));
+
+        for (String key : jsonKeys) {
+            JSONObject point = obj.getJSONObject(key);
             int base = Integer.parseInt(point.getString("base"));
             String valueStr = point.getString("value");
 
             // Convert y from base to decimal (BigInteger)
             BigInteger y = new BigInteger(valueStr, base);
-            points.add(new Point(BigInteger.valueOf(i), y));
+            BigInteger x = new BigInteger(key);
+            points.add(new Point(x, y));
             
         }
 
-        // 4. Use first k points for interpolation
+        // Use first k points for interpolation
         List<Point> subset = points.subList(0, k);
 
-        // 5. Compute constant term using Lagrange interpolation at x=0
+        // Compute constant term using Lagrange interpolation at x=0
         BigInteger secret = lagrangeInterpolationAtZero(subset);
         System.out.println("\nSecret (c) = " + secret);
     }
